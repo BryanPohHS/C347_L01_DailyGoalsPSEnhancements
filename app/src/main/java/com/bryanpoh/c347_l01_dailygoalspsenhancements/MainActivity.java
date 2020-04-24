@@ -3,6 +3,7 @@ package com.bryanpoh.c347_l01_dailygoalspsenhancements;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,11 @@ public class MainActivity extends AppCompatActivity {
     RadioGroup radioGrp1, radioGrp2, radioGrp3;
     EditText et;
     Button btnSubmit;
+
+    public static final String SHARED_PREFS = "sharedPrefs";
+
+    // SharedPreferences
+    SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +69,45 @@ public class MainActivity extends AppCompatActivity {
                 // Start new activity
                 startActivity(i);
 
+                // Call save data function for shared pref
+                saveData();
             }
         });
 
+        // Load the saved data from shared pref
+        loadData();
+
+    }
+
+    public void saveData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Insert choices from user into editor
+        editor.putInt("choice1", radioGrp1.getCheckedRadioButtonId());
+        editor.putInt("choice2", radioGrp2.getCheckedRadioButtonId());
+        editor.putInt("choice3", radioGrp3.getCheckedRadioButtonId());
+        editor.putString("reflection", et.getText().toString());
+
+        // Commit the choices into editor
+        editor.commit();
+    }
+
+    public void loadData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+
+        // Retrieve the choices from shared prefs and set into appropriate variables
+        Integer choice1 = sharedPreferences.getInt("choice1", 0);
+        Integer choice2 = sharedPreferences.getInt("choice2", 0);
+        Integer choice3 = sharedPreferences.getInt("choice3", 0);
+
+        String reflection = sharedPreferences.getString("reflection", null);
+
+        // Set the radio buttons in the radio group AND edit text with the choices set in shared pref
+        radioGrp1.check(choice1);
+        radioGrp2.check(choice2);
+        radioGrp3.check(choice3);
+
+        et.setText(reflection);
     }
 }
